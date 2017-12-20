@@ -3,18 +3,10 @@
 
 int main() {
     int n, m;
-    const int BLOCK = 1;
+    const int BLOCK = 150000;
     unsigned char *buffer_a = (unsigned char*)malloc(BLOCK);
     FILE *input = fopen("input.bin", "rb");
-//    char in[] = {9, 9};
-//    char in2[] = {2};
-//    fwrite(&n, sizeof(int), 1, input);
-//    fwrite(&in, sizeof(char), n, input);
-//    fwrite(&m, sizeof(int), 1, input);
-//    fwrite(&in2, sizeof(char), m, input);
-//    fclose(input);
     fread(&n, sizeof(int), 1, input);
-
 
     int block_a = n > BLOCK ? BLOCK : n;
     FILE *reversed_a = fopen("reversed_a.bin", "w+b");
@@ -27,7 +19,7 @@ int main() {
         block_a = i >= BLOCK ? BLOCK : n % BLOCK;
     }
 
-    unsigned char *buffer_b = (unsigned char *) malloc(BLOCK);
+    unsigned char *buffer_b = (unsigned char*)malloc(BLOCK);
     fseek(input, sizeof(int) + n, SEEK_SET);
     fread(&m, sizeof(int), 1, input);
 
@@ -45,7 +37,6 @@ int main() {
     unsigned char *buffer_c = (unsigned char *) malloc(BLOCK);
 
     int max = n > m ? n : m;
-    int block_c = max > BLOCK ? BLOCK : max;
     int rad_a = 0, rad_b = 0;
     int k = 0, sum, dec = 0;
     int current_a, current_b;
@@ -115,8 +106,8 @@ int main() {
                     dec = 0;
                 }
             }
-            k += current_a;
             fwrite(buffer_c, sizeof(char), current_a, reversed_c);
+            k += current_a;
         } else {
             for (int j = 0; j < current_a; ++j) {
                 sum = buffer_a[j] + buffer_b[j] + dec;
@@ -138,9 +129,13 @@ int main() {
                     dec = 0;
                 }
             }
-            k += current_b;
             fwrite(buffer_c, sizeof(char), current_b, reversed_c);
+            k += current_b;
         }
+    }
+    if (dec == 1) {
+        fwrite(&dec, sizeof(char), 1, reversed_c);
+        k++;
     }
 
     int block_o = k > BLOCK ? BLOCK : k;
